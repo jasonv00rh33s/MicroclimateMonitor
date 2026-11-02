@@ -1,4 +1,3 @@
-csharp
 using Microclimate.Core.Models;
 
 namespace Microclimate.Sensors;
