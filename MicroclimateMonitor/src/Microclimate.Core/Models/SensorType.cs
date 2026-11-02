@@ -4,5 +4,5 @@ public enum SensorType
 {
     Temperature,
     Humidity,
-    CO2
+    Co2
 }
