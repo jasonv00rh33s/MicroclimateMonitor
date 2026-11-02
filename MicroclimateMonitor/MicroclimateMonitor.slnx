@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Microclimate.App/Microclimate.App.csproj" />
+    <Project Path="src/Microclimate.Core/Microclimate.Core.csproj" />
+    <Project Path="src/Microclimate.Data/Microclimate.Data.csproj" />
+    <Project Path="src/Microclimate.Sensors/Microclimate.Sensors.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Microclimate.Tests/Microclimate.Tests.csproj" />
+  </Folder>
+</Solution>
