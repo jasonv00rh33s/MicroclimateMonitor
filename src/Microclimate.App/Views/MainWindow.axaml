@@ -1,19 +1,21 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:Microclimate.App.ViewModels"
+        xmlns:sp="clr-namespace:ScottPlot.Avalonia;assembly=ScottPlot.Avalonia"
         x:Class="Microclimate.App.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Title="Моніторинг мікроклімату"
-        Width="760" Height="520">
+        Width="900" Height="680">
 
   <DockPanel Margin="16">
-    <TextBlock DockPanel.Dock="Top" Text="Кімнати" FontSize="22" FontWeight="SemiBold" Margin="0,0,0,12"/>
-    <TextBlock DockPanel.Dock="Bottom" Text="{Binding Status}" Opacity="0.6" Margin="0,12,0,0"/>
+    <TextBlock DockPanel.Dock="Top" Text="Кімнати" FontSize="22" FontWeight="SemiBold" Margin="0,0,0,8"/>
+    <TextBlock DockPanel.Dock="Bottom" Text="{Binding Status}" Opacity="0.6" Margin="0,8,0,0"/>
 
-    <ListBox ItemsSource="{Binding Rooms}">
+    <ListBox DockPanel.Dock="Top" Height="150"
+             ItemsSource="{Binding Rooms}" SelectedItem="{Binding SelectedRoom}">
       <ListBox.ItemTemplate>
         <DataTemplate x:DataType="vm:RoomViewModel">
-          <Grid ColumnDefinitions="2*,*,*,*,2*" Margin="4,8">
+          <Grid ColumnDefinitions="2*,*,*,*,2*" Margin="4,6">
             <TextBlock Grid.Column="0" Text="{Binding Name}" FontWeight="SemiBold"/>
             <TextBlock Grid.Column="1" Text="{Binding Temperature}"/>
             <TextBlock Grid.Column="2" Text="{Binding Humidity}"/>
@@ -23,5 +25,22 @@
         </DataTemplate>
       </ListBox.ItemTemplate>
     </ListBox>
+
+    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="12" Margin="0,12">
+      <TextBlock Text="Показник:" VerticalAlignment="Center"/>
+      <ComboBox SelectedIndex="{Binding SelectedMetricIndex}" Width="160">
+        <ComboBoxItem>Температура</ComboBoxItem>
+        <ComboBoxItem>Вологість</ComboBoxItem>
+        <ComboBoxItem>CO₂</ComboBoxItem>
+      </ComboBox>
+      <TextBlock Text="Період:" VerticalAlignment="Center"/>
+      <ComboBox SelectedIndex="{Binding SelectedRangeIndex}" Width="140">
+        <ComboBoxItem>Година</ComboBoxItem>
+        <ComboBoxItem>Доба</ComboBoxItem>
+        <ComboBoxItem>Тиждень</ComboBoxItem>
+      </ComboBox>
+    </StackPanel>
+
+    <sp:AvaPlot x:Name="Chart" MinHeight="260"/>
   </DockPanel>
 </Window>
