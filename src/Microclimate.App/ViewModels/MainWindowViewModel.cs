@@ -81,6 +81,7 @@ public partial class MainWindowViewModel : ObservableObject
         }
         catch (Exception ex)
         {
+            Serilog.Log.Error(ex, "...");
             Status = $"Помилка оновлення: {ex.Message}";
         }
         finally
@@ -116,6 +117,7 @@ public partial class MainWindowViewModel : ObservableObject
         }
         catch (Exception ex)
         {
+            Serilog.Log.Error(ex, "...");
             Status = $"Не вдалося підтвердити сповіщення: {ex.Message}";
         }
         finally
@@ -151,6 +153,7 @@ public partial class MainWindowViewModel : ObservableObject
         }
         catch (Exception ex)
         {
+            Serilog.Log.Error(ex, "...");
             Status = $"Помилка завантаження графіка: {ex.Message}";
             return empty;
         }
