@@ -23,4 +23,16 @@ public class AlertRepository
             .OrderByDescending(a => a.Timestamp)
             .Take(count)
             .ToListAsync(ct);
+
+     public async Task<int> GetUnacknowledgedCountAsync(CancellationToken ct = default)
+        => await _db.Alerts.CountAsync(a => !a.Acknowledged, ct);
+
+    /// Позначає сповіщення підтвердженим. Повертає false, якщо такого немає
+    public async Task<bool> AcknowledgeAsync(int alertId, CancellationToken ct = default)
+    {
+        int updated = await _db.Alerts
+            .Where(a => a.Id == alertId)
+            .ExecuteUpdateAsync(s => s.SetProperty(a => a.Acknowledged, true), ct);
+        return updated > 0;
+    }
 }

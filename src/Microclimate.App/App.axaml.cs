@@ -39,7 +39,10 @@ public partial class App : Application
 
             // Контекст №1: тільки для UI-потоку
             var uiDb = new MicroclimateDbContext(options);
-            var vm = new MainWindowViewModel(new RoomRepository(uiDb), new MeasurementRepository(uiDb));
+            var vm = new MainWindowViewModel(
+                new RoomRepository(uiDb),
+                new MeasurementRepository(uiDb),
+                new AlertRepository(uiDb));
 
             // Контекст №2: тільки для фонового опитування
             var pollDb = new MicroclimateDbContext(options);
