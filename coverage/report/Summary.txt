@@ -1,0 +1,46 @@
+Summary
+  Generated on: 03-Nov-26 - 15:04:50
+  Coverage date: 03-Nov-26 - 15:04:29
+  Parser: Cobertura
+  Assemblies: 3
+  Classes: 20
+  Files: 21
+  Line coverage: 96.2%
+  Covered lines: 803
+  Uncovered lines: 31
+  Coverable lines: 834
+  Total lines: 1178
+  Branch coverage: 90.3% (112 of 124)
+  Covered branches: 112
+  Total branches: 124
+  Method coverage: 90.4% (66 of 73)
+  Full method coverage: 86.3% (63 of 73)
+  Covered methods: 66
+  Fully covered methods: 63
+  Total methods: 73
+
+Microclimate.Core                                                   95.4%
+  Microclimate.Core.Models.Alert                                    87.5%
+  Microclimate.Core.Models.Measurement                                60%
+  Microclimate.Core.Models.Room                                      100%
+  Microclimate.Core.Models.Rule                                      100%
+  Microclimate.Core.Models.Sensor                                   83.3%
+  Microclimate.Core.Services.AlertFormatter                         94.4%
+  Microclimate.Core.Services.ComfortAssessor                         100%
+  Microclimate.Core.Services.Downsampler                             100%
+  Microclimate.Core.Services.MeasurementFilter                       100%
+  Microclimate.Core.Services.RuleEvaluator                           100%
+
+Microclimate.Data                                                   96.4%
+  Microclimate.Data.AlertRepository                                  100%
+  Microclimate.Data.DbInitializer                                    100%
+  Microclimate.Data.DesignTimeFactory                                  0%
+  Microclimate.Data.MeasurementRepository                            100%
+  Microclimate.Data.MicroclimateDbContext                            100%
+  Microclimate.Data.Migrations.InitialCreate                        96.3%
+  Microclimate.Data.Migrations.MicroclimateDbContextModelSnapshot    100%
+  Microclimate.Data.PollingService                                  96.8%
+  Microclimate.Data.RoomRepository                                  68.4%
+
+Microclimate.Sensors                                                96.4%
+  Microclimate.Sensors.SimulatedSensorSource                        96.4%
