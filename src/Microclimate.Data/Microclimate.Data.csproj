@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Microclimate.Core\Microclimate.Core.csproj" />
+    <ProjectReference Include="..\Microclimate.Sensors\Microclimate.Sensors.csproj" />
   </ItemGroup>
 
   <ItemGroup>
