@@ -43,5 +43,6 @@ jobs:
         shell: powershell
         run: |
           ${{ runner.temp }}\scanner\dotnet-sonarscanner begin /k:"jasonv00rh33s_MicroclimateMonitor" /o:"jasonv00rh33s" /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
-          dotnet build
+          dotnet build --no-incremental
+          dotnet test --no-build --collect:"XPlat Code Coverage" --results-directory ./coverage
           ${{ runner.temp }}\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"

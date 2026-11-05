@@ -19,7 +19,12 @@ public class AlertRepositoryTests : IDisposable
         _db.Database.EnsureCreated(); 
     }
 
-    public void Dispose() { _db.Dispose(); _conn.Dispose(); }
+    public void Dispose() 
+    { 
+        _db.Dispose();
+        _conn.Dispose(); 
+        GC.SuppressFinalize(this);
+    }
 
     private async Task<(AlertRepository repo, Alert alert)> ArrangeAsync()
     {
