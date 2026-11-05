@@ -1,13 +1,3 @@
-# Microclimate Monitor
-
-<p align="center">
-  <img src="https://img.shields.io/badge/.NET-10.0-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" alt=".NET 10" />
-  <img src="https://img.shields.io/badge/Avalonia-11.x-9B4F96?style=for-the-badge&logo=avalonia&logoColor=white" alt="Avalonia UI" />
-  <img src="https://img.shields.io/badge/SQLite-EF_Core-003B57?style=for-the-badge&logo=sqlite&logoColor=white" alt="SQLite & EF Core" />
-  <img src="https://img.shields.io/badge/Platform-Windows_%7C_Linux_%7C_macOS-222222?style=for-the-badge" alt="Cross-platform" />
-  <img src="https://img.shields.io/badge/Tests-xUnit_%7C_ReportGenerator-green?style=for-the-badge" alt="Testing" />
-  <img src="https://img.shields.io/badge/Analysis-SonarCloud-F3702A?style=for-the-badge&logo=sonarcloud&logoColor=white" alt="SonarCloud" />
-</p>
 
 ---
 
