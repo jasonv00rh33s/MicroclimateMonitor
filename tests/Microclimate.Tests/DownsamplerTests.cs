@@ -1,13 +1,13 @@
 using Microclimate.Core.Models;
 using Microclimate.Core.Services;
-
+using System;
 namespace Microclimate.Tests;
 
 public class DownsamplerTests
 {
     private static List<Measurement> Make(int count)
         => Enumerable.Range(0, count)
-            .Select(i => new Measurement { Timestamp = new DateTime(2026, 1, 1).AddSeconds(i), Value = i })
+            .Select(i => new Measurement { Timestamp = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddSeconds(i), Value = i })
             .ToList();
 
     [Fact]

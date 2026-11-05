@@ -5,11 +5,36 @@
         x:Class="Microclimate.App.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Title="Моніторинг мікроклімату"
-        Width="900" Height="680">
+        Width="900" Height="860">
 
   <DockPanel Margin="16">
     <TextBlock DockPanel.Dock="Top" Text="Кімнати" FontSize="22" FontWeight="SemiBold" Margin="0,0,0,8"/>
     <TextBlock DockPanel.Dock="Bottom" Text="{Binding Status}" Opacity="0.6" Margin="0,8,0,0"/>
+        <StackPanel DockPanel.Dock="Bottom" Margin="0,8,0,0">
+      <TextBlock FontWeight="SemiBold" Margin="0,0,0,4">
+        <Run Text="Сповіщення · непідтверджених: "/>
+        <Run Text="{Binding UnacknowledgedCount}"/>
+      </TextBlock>
+
+      <ListBox Height="150" ItemsSource="{Binding Alerts}">
+        <ListBox.ItemTemplate>
+          <DataTemplate x:DataType="vm:AlertViewModel">
+            <Grid ColumnDefinitions="Auto,110,150,*,Auto" Margin="2,4"
+                  Opacity="{Binding RowOpacity}">
+              <Border Grid.Column="0" Width="8" Margin="0,0,8,0" CornerRadius="4"
+                      Background="{Binding SeverityBrush}"/>
+              <TextBlock Grid.Column="1" Text="{Binding Time}" Opacity="0.7"/>
+              <TextBlock Grid.Column="2" Text="{Binding RoomName}" FontWeight="SemiBold"/>
+              <TextBlock Grid.Column="3" Text="{Binding Text}" TextTrimming="CharacterEllipsis"/>
+              <Button Grid.Column="4" Content="Підтвердити" Padding="8,2"
+                      IsVisible="{Binding CanAcknowledge}"
+                      Command="{Binding $parent[ListBox].((vm:MainWindowViewModel)DataContext).AcknowledgeCommand}"
+                      CommandParameter="{Binding}"/>
+            </Grid>
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
+    </StackPanel>
 
     <ListBox DockPanel.Dock="Top" Height="150"
              ItemsSource="{Binding Rooms}" SelectedItem="{Binding SelectedRoom}">

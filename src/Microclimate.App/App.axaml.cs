@@ -12,6 +12,8 @@ using Microclimate.Core.Services;
 using Microclimate.Data;
 using Microclimate.Sensors;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
+
 
 namespace Microclimate.App;
 
@@ -30,6 +32,16 @@ public partial class App : Application
                 "MicroclimateMonitor");
             Directory.CreateDirectory(dir);
 
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.File(Path.Combine(dir, "logs", "app-.log"), rollingInterval: RollingInterval.Day)
+                .CreateLogger();
+                Log.Information("Застосунок запущено");
+
+            AppDomain.CurrentDomain.UnhandledException += (_, e) =>
+                Log.Fatal(e.ExceptionObject as Exception, "Необроблений виняток");
+            TaskScheduler.UnobservedTaskException += (_, e) =>
+                Log.Error(e.Exception, "Необроблений виняток у задачі");      
+
             var options = new DbContextOptionsBuilder<MicroclimateDbContext>()
                 .UseSqlite($"Data Source={Path.Combine(dir, "microclimate.db")}")
                 .Options;
@@ -39,7 +51,10 @@ public partial class App : Application
 
             // Контекст №1: тільки для UI-потоку
             var uiDb = new MicroclimateDbContext(options);
-            var vm = new MainWindowViewModel(new RoomRepository(uiDb), new MeasurementRepository(uiDb));
+            var vm = new MainWindowViewModel(
+                new RoomRepository(uiDb),
+                new MeasurementRepository(uiDb),
+                new AlertRepository(uiDb));
 
             // Контекст №2: тільки для фонового опитування
             var pollDb = new MicroclimateDbContext(options);
@@ -53,7 +68,7 @@ public partial class App : Application
 
             _ = Task.Run(() => polling.RunAsync(
                 TimeSpan.FromSeconds(3), () => DateTime.UtcNow, _cts.Token,
-                ex => System.Diagnostics.Debug.WriteLine(ex)));
+                ex => Log.Error(ex, "Помилка циклу опитування")));
 
             var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(3) };
             timer.Tick += async (_, _) => await vm.RefreshAsync();
@@ -66,6 +81,8 @@ public partial class App : Application
                 _cts.Cancel();
                 uiDb.Dispose();
                 pollDb.Dispose();
+                Log.CloseAndFlush();
+                Log.Information("Застосунок зупинено");
             };
         }
 

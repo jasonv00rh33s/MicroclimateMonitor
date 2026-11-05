@@ -14,36 +14,36 @@ public class MicroclimateDbContext : DbContext
     public DbSet<Rule> Rules => Set<Rule>();
     public DbSet<Alert> Alerts => Set<Alert>();
 
-    protected override void OnModelCreating(ModelBuilder b)
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        b.Entity<Room>(e =>
+        modelBuilder.Entity<Room>(e =>
         {
             e.Property(r => r.Name).IsRequired().HasMaxLength(100);
             e.HasIndex(r => r.Name).IsUnique();
         });
 
-        b.Entity<Sensor>(e =>
+        modelBuilder.Entity<Sensor>(e =>
         {
             e.Property(s => s.Unit).HasMaxLength(20);
             e.HasOne(s => s.Room).WithMany(r => r.Sensors)
              .HasForeignKey(s => s.RoomId).OnDelete(DeleteBehavior.Cascade);
         });
 
-        b.Entity<Measurement>(e =>
+        modelBuilder.Entity<Measurement>(e =>
         {
             e.HasOne(m => m.Sensor).WithMany(s => s.Measurements)
              .HasForeignKey(m => m.SensorId).OnDelete(DeleteBehavior.Cascade);
             e.HasIndex(m => new { m.SensorId, m.Timestamp });
         });
 
-        b.Entity<Alert>(e =>
+        modelBuilder.Entity<Alert>(e =>
         {
             e.HasOne(a => a.Room).WithMany().HasForeignKey(a => a.RoomId).OnDelete(DeleteBehavior.Cascade);
             e.HasOne(a => a.Rule).WithMany().HasForeignKey(a => a.RuleId).OnDelete(DeleteBehavior.Cascade);
             e.HasIndex(a => new { a.RoomId, a.Timestamp });
         });
 
-        b.Entity<Rule>().HasData(
+        modelBuilder.Entity<Rule>().HasData(
             new Rule { Id = 1, SensorType = SensorType.Co2, MaxValue = 1000, Severity = Severity.Warning },
             new Rule { Id = 2, SensorType = SensorType.Temperature, MinValue = 18, MaxValue = 26, Severity = Severity.Warning },
             new Rule { Id = 3, SensorType = SensorType.Humidity, MinValue = 30, MaxValue = 60, Severity = Severity.Info });

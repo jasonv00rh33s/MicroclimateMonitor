@@ -8,6 +8,7 @@ using Microclimate.Data;
 using System.Threading.Tasks;
 using System.Linq;
 using Microclimate.Core.Services;
+using CommunityToolkit.Mvvm.Input;
 
 namespace Microclimate.App.ViewModels;
 
@@ -15,24 +16,29 @@ public partial class MainWindowViewModel : ObservableObject
 {
     private readonly RoomRepository _rooms;
     private readonly MeasurementRepository _measurements;
+    private readonly AlertRepository _alerts;
     private readonly SemaphoreSlim _dbLock = new(1, 1); // один контекст = одна операція за раз
 
     public ObservableCollection<RoomViewModel> Rooms { get; } = new();
+    public ObservableCollection<AlertViewModel> Alerts { get; } = new();
 
     [ObservableProperty] private string _status = "Завантаження...";
     [ObservableProperty] private RoomViewModel? _selectedRoom;
-    [ObservableProperty] private int _selectedMetricIndex;  // 0 = t, 1 = вологість, 2 = CO2 (порядок SensorType)
+    [ObservableProperty] private int _selectedMetricIndex;  // порядок SensorType: 0 = t, 1 = вологість, 2 = CO2
     [ObservableProperty] private int _selectedRangeIndex;   // 0 = година, 1 = доба, 2 = тиждень
+    [ObservableProperty] private int _unacknowledgedCount;
 
     /// Подія: дані оновилися, графік варто перемалювати
     public event EventHandler? Refreshed;
 
-    public MainWindowViewModel() : this(null!, null!) { }
+    // Конструктор без параметрів потрібен для дизайнера Avalonia
+    public MainWindowViewModel() : this(null!, null!, null!) { }
 
-    public MainWindowViewModel(RoomRepository rooms, MeasurementRepository measurements)
+    public MainWindowViewModel(RoomRepository rooms, MeasurementRepository measurements, AlertRepository alerts)
     {
         _rooms = rooms;
         _measurements = measurements;
+        _alerts = alerts;
     }
 
     public async Task RefreshAsync()
@@ -66,11 +72,16 @@ public partial class MainWindowViewModel : ObservableObject
                 vm.Update(t, h, c);
             }
 
+            var recent = await _alerts.GetRecentAsync(30);
+            SyncAlerts(recent);
+            UnacknowledgedCount = await _alerts.GetUnacknowledgedCountAsync();
+
             SelectedRoom ??= Rooms.FirstOrDefault();
             Status = $"Оновлено: {DateTime.Now:HH:mm:ss}";
         }
         catch (Exception ex)
         {
+            Serilog.Log.Error(ex, "...");
             Status = $"Помилка оновлення: {ex.Message}";
         }
         finally
@@ -81,7 +92,41 @@ public partial class MainWindowViewModel : ObservableObject
         Refreshed?.Invoke(this, EventArgs.Empty);
     }
 
-    /// <summary>Точки для графіка за поточним вибором кімнати, показника й періоду.</summary>
+    // Перебудовуємо список лише коли з'явилися нові сповіщення
+    private void SyncAlerts(List<Alert> recent)
+    {
+        if (Alerts.Select(a => a.Id).SequenceEqual(recent.Select(a => a.Id))) return;
+
+        Alerts.Clear();
+        foreach (var a in recent) Alerts.Add(new AlertViewModel(a));
+    }
+
+    [RelayCommand]
+    private async Task AcknowledgeAsync(AlertViewModel? alert)
+    {
+        if (alert is null || alert.Acknowledged || _alerts is null) return;
+
+        await _dbLock.WaitAsync();
+        try
+        {
+            if (await _alerts.AcknowledgeAsync(alert.Id))
+            {
+                alert.Acknowledged = true;
+                UnacknowledgedCount = Math.Max(0, UnacknowledgedCount - 1);
+            }
+        }
+        catch (Exception ex)
+        {
+            Serilog.Log.Error(ex, "...");
+            Status = $"Не вдалося підтвердити сповіщення: {ex.Message}";
+        }
+        finally
+        {
+            _dbLock.Release();
+        }
+    }
+
+    /// Точки для графіка за поточним вибором кімнати, показника й періоду
     public async Task<IReadOnlyList<(DateTime Time, double Value)>> GetSeriesAsync()
     {
         var empty = Array.Empty<(DateTime, double)>();
@@ -108,6 +153,7 @@ public partial class MainWindowViewModel : ObservableObject
         }
         catch (Exception ex)
         {
+            Serilog.Log.Error(ex, "...");
             Status = $"Помилка завантаження графіка: {ex.Message}";
             return empty;
         }
