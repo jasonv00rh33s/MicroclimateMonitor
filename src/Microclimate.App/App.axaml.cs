@@ -35,6 +35,7 @@ public partial class App : Application
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.File(Path.Combine(dir, "logs", "app-.log"), rollingInterval: RollingInterval.Day)
                 .CreateLogger();
+                Log.Information("Застосунок запущено");
 
             AppDomain.CurrentDomain.UnhandledException += (_, e) =>
                 Log.Fatal(e.ExceptionObject as Exception, "Необроблений виняток");
@@ -81,6 +82,7 @@ public partial class App : Application
                 uiDb.Dispose();
                 pollDb.Dispose();
                 Log.CloseAndFlush();
+                Log.Information("Застосунок зупинено");
             };
         }
 
